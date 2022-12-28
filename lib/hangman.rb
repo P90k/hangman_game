@@ -3,6 +3,7 @@ class HangMan
   def initialize 
     @word = generate_word
     @words_hints = Array.new(@word.length, '_')
+    @guessed_letters = []
   end
 
   def generate_word()
@@ -24,12 +25,15 @@ class HangMan
   def gameflow
     welcome_message
     count = 12
+    p @word
     12.times do
-      p 'Try to guess the word'
+      p 'Try to guess the letter'
       p "Number of tries left: #{count}"
-      guess = gets.chomp
-      guess.each_char {|letter| @words_hints[@word.index(letter)] = letter if word.include?(letter)}
-      return winners_message if guess == @word
+      p @guessed_letters
+      letter = gets.chomp
+      @guessed_letters.push(letter) unless @guessed_letters.include?(letter)
+      @words_hints[@word.index(letter)] = letter if word.include?(letter)
+      return winners_message if @words_hints.join() == @word
         p @words_hints.join(' ')
         count -= 1
     end
