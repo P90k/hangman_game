@@ -9,6 +9,15 @@ class HangMan
     @guessed_letters = []
   end
 
+  def game_menu
+    puts 'Type "start" to start the game'
+    puts 'Type "saved" to access saved games'
+    puts 'Type "exit" to exit the game.'
+    choice = gets.chomp.downcase
+    return if choice == 'start'
+    exit if choice == 'exit'
+  end
+
   def generate_word
     dictionary = File.open('google-10000-english-no-swears.txt', 'r')
     array_words = []
@@ -37,6 +46,7 @@ class HangMan
 
   def gameflow
     welcome_message
+    game_menu
     p @word
     12.times do |tries|
       user_instructions(tries)
@@ -49,6 +59,7 @@ class HangMan
     end
   end
 end
+
 
 state = HangMan.new
 state.gameflow
