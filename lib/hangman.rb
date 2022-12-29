@@ -1,15 +1,18 @@
+# frozen_string_literal: true
+
 class HangMan
   attr_accessor :word
-  def initialize 
+
+  def initialize
     @word = generate_word
-    @words_hints = Array.new(@word.length, '_')
+    @word_hints = Array.new(@word.length, '_')
     @guessed_letters = []
   end
 
-  def generate_word()
+  def generate_word
     dictionary = File.open('google-10000-english-no-swears.txt', 'r')
     array_words = []
-    dictionary.each_line(chomp: true) {|line| array_words << line if line.length > 5 && line.length < 12}
+    dictionary.each_line(chomp: true) { |line| array_words << line if line.length > 5 && line.length < 12 }
     dictionary.close
     array_words.sample
   end
@@ -19,23 +22,30 @@ class HangMan
   end
 
   def winners_message
-    puts 'Congrats'
+    puts "Congrats, correct word is #{@word}"
+  end
+
+  def remember_guessed_letter(letter)
+    @guessed_letters.push(letter) unless @guessed_letters.include?(letter)
+  end
+
+  def user_instructions(tries)
+    puts 'Try to guess the letter'
+    puts "Number of tries left: #{12 - tries}"
+    puts "Letters that have been guessed: #{@guessed_letters.join(', ')}"
   end
 
   def gameflow
     welcome_message
-    count = 12
     p @word
-    12.times do
-      p 'Try to guess the letter'
-      p "Number of tries left: #{count}"
-      p @guessed_letters
-      letter = gets.chomp
-      @guessed_letters.push(letter) unless @guessed_letters.include?(letter)
-      @words_hints[@word.index(letter)] = letter if word.include?(letter)
-      return winners_message if @words_hints.join() == @word
-        p @words_hints.join(' ')
-        count -= 1
+    12.times do |tries|
+      user_instructions(tries)
+      letter = gets.chomp.downcase
+      remember_guessed_letter(letter)
+      @word.split('').each_with_index { |char, index| @word_hints[index] = letter if char == letter }
+      return winners_message if @word_hints.join == @word
+
+      p @word_hints.join(' ')
     end
   end
 end
