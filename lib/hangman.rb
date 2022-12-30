@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'yaml'
 class HangMan
   attr_accessor :word
 
@@ -70,14 +71,14 @@ class HangMan
 
   def save_game
     File.open('saved_game', 'w') do |output|
-      output.puts(Marshal.dump(self))
+      output.puts(YAML.dump(self))
     end
     exit
   end
 
   def open_saved_game
     File.open('saved_game', 'r') do |input|
-      Marshal.load(input).loop
+      YAML.load(input).loop
     end
   end
 
