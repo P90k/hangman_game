@@ -7,6 +7,7 @@ class HangMan
     @word = generate_word
     @word_hints = Array.new(@word.length, '_')
     @guessed_letters = []
+    @tries = 12
   end
 
   def game_menu
@@ -15,6 +16,11 @@ class HangMan
     puts 'Type "exit" to exit the game.'
     choice = gets.chomp.downcase
     return if choice == 'start'
+
+    if choice == 'saved'
+      open_saved_game
+      exit
+    end
     exit if choice == 'exit'
   end
 
@@ -38,28 +44,49 @@ class HangMan
     @guessed_letters.push(letter) unless @guessed_letters.include?(letter)
   end
 
-  def user_instructions(tries)
-    puts 'Try to guess the letter'
-    puts "Number of tries left: #{12 - tries}"
+  def loop
+    while @tries.positive?
+      @tries -= 1
+
+      user_instructions
+      letter = gets.chomp.downcase
+      save_game if letter == '--s'
+      exit if letter == '--e'
+
+      remember_guessed_letter(letter)
+      @word.split('').each_with_index { |char, index| @word_hints[index] = letter if char == letter }
+      return winners_message if @word_hints.join == @word
+    end
+  end
+
+  def user_instructions
+    puts '--s -> save game | --e -> exit game'
+    puts 'Guess letter'
+    puts "Number of tries left: #{@tries}"
     puts "Letters that have been guessed: #{@guessed_letters.join(', ')}"
+    puts @word_hints.join(' ')
+    puts "\n"
+  end
+
+  def save_game
+    File.open('saved_game', 'w') do |output|
+      output.puts(Marshal.dump(self))
+    end
+    exit
+  end
+
+  def open_saved_game
+    File.open('saved_game', 'r') do |input|
+      Marshal.load(input).loop
+    end
   end
 
   def gameflow
     welcome_message
     game_menu
-    p @word
-    12.times do |tries|
-      user_instructions(tries)
-      letter = gets.chomp.downcase
-      remember_guessed_letter(letter)
-      @word.split('').each_with_index { |char, index| @word_hints[index] = letter if char == letter }
-      return winners_message if @word_hints.join == @word
-
-      p @word_hints.join(' ')
-    end
+    loop
   end
 end
-
 
 state = HangMan.new
 state.gameflow
