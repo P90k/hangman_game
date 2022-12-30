@@ -1,0 +1,14 @@
+--- !ruby/object:HangMan
+word: apparatus
+word_hints:
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+- _
+guessed_letters: []
+tries: 11
